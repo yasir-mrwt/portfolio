@@ -1,23 +1,6 @@
-/**
- * Projects Page Component
- *
- * Fetches projects from Flask API and displays them.
- *
- * Data flow:
- * 1. Component mounts
- * 2. useEffect calls fetchProjects()
- * 3. fetchProjects() calls Flask /api/v1/projects
- * 4. Flask returns JSON with project data
- * 5. State updates with projects
- * 6. UI re-renders with project cards
- */
-
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import ScrollReveal, {
-  ScrollRevealStagger,
-  ScrollRevealItem,
-} from "../components/ScrollReveal";
+import { motion, AnimatePresence } from "framer-motion";
+import ScrollReveal from "../components/ScrollReveal";
 import { getProjects } from "../utils/api";
 
 export default function Projects() {
@@ -25,8 +8,8 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [hoveredId, setHoveredId] = useState(null);
 
-  // Fetch projects when component mounts
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -38,17 +21,14 @@ export default function Projects() {
       setProjects(data);
       setError(null);
     } catch (err) {
-      setError("Failed to load projects. Please try again later.");
-      console.error("Error fetching projects:", err);
+      setError("Failed to load projects");
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Get unique tech stack items for filtering
   const allTech = [...new Set(projects.flatMap((p) => p.tech_stack))];
-
-  // Filter projects based on selected tech
   const filteredProjects =
     filter === "all"
       ? projects
@@ -56,10 +36,10 @@ export default function Projects() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading projects...</p>
+          <p className="text-slate-400">Loading projects...</p>
         </div>
       </div>
     );
@@ -67,12 +47,12 @@ export default function Projects() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="text-center">
           <p className="text-red-400 mb-4">{error}</p>
           <button
             onClick={fetchProjects}
-            className="px-6 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition"
+            className="px-6 py-3 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition"
           >
             Retry
           </button>
@@ -82,29 +62,44 @@ export default function Projects() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-slate-950 pt-24 pb-20">
+      {/* Header */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <ScrollReveal direction="up">
-          <h1 className="text-5xl font-bold text-center mb-4">
-            My <span className="text-indigo-400">Projects</span>
-          </h1>
-          <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
-            A collection of web applications showcasing modern development
-            practices and innovative solutions
-          </p>
-        </ScrollReveal>
+          <div className="text-center max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6"
+            >
+              <span className="text-sm text-indigo-400 font-medium">
+                Portfolio
+              </span>
+            </motion.div>
 
-        {/* Filter Buttons */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+              My Projects
+            </h1>
+            <p className="text-lg text-slate-400">
+              A showcase of web applications built with modern technologies and
+              best practices
+            </p>
+          </div>
+        </ScrollReveal>
+      </div>
+
+      {/* Filter Buttons */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <ScrollReveal direction="up" delay={0.2}>
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
+          <div className="flex flex-wrap justify-center gap-3">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setFilter("all")}
-              className={`px-6 py-2 rounded-lg font-semibold transition ${
+              className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                 filter === "all"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                  : "bg-slate-900 text-slate-400 border border-slate-800 hover:border-indigo-500/50"
               }`}
             >
               All Projects
@@ -115,10 +110,10 @@ export default function Projects() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setFilter(tech)}
-                className={`px-6 py-2 rounded-lg font-semibold transition ${
+                className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                   filter === tech
-                    ? "bg-indigo-600 text-white"
-                    : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                    ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                    : "bg-slate-900 text-slate-400 border border-slate-800 hover:border-indigo-500/50"
                 }`}
               >
                 {tech}
@@ -126,67 +121,101 @@ export default function Projects() {
             ))}
           </div>
         </ScrollReveal>
+      </div>
 
-        {/* Projects Grid */}
-        <ScrollRevealStagger staggerDelay={0.1}>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <ScrollRevealItem key={project.id}>
-                <motion.div
-                  whileHover={{ y: -10 }}
-                  className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700 hover:border-indigo-500 transition-colors"
-                >
-                  {/* Project Image */}
-                  <div className="w-full h-48 bg-gradient-to-br from-indigo-900 to-purple-900 flex items-center justify-center">
-                    <span className="text-6xl">💼</span>
+      {/* Projects Grid */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={filter}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {filteredProjects.map((project, idx) => (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                onHoverStart={() => setHoveredId(project.id)}
+                onHoverEnd={() => setHoveredId(null)}
+                whileHover={{ y: -12 }}
+                className="group relative bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-indigo-500/50 transition-all duration-300"
+              >
+                {/* Project Image */}
+                <div className="relative h-56 bg-gradient-to-br from-indigo-600 to-purple-600 overflow-hidden">
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <motion.div
+                      animate={{ scale: hoveredId === project.id ? 1.1 : 1 }}
+                      className="text-white/90 text-7xl"
+                    >
+                      💻
+                    </motion.div>
                   </div>
 
-                  {/* Project Info */}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold mb-2">{project.title}</h3>
-                    <p className="text-gray-400 mb-4">{project.description}</p>
-
-                    {/* Tech Stack Tags */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tech_stack.map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-3 py-1 bg-indigo-600/30 rounded-full text-sm"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Links */}
+                  {/* Hover Overlay */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: hoveredId === project.id ? 1 : 0 }}
+                    className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6"
+                  >
                     <div className="flex gap-3">
                       <a
                         href={project.github_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 px-4 py-2 bg-gray-700 rounded-lg text-center hover:bg-gray-600 transition"
+                        className="p-3 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition"
                       >
-                        GitHub
+                        <span className="text-white text-xl">🔗</span>
                       </a>
                       <a
                         href={project.live_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 px-4 py-2 bg-indigo-600 rounded-lg text-center hover:bg-indigo-700 transition"
+                        className="p-3 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition"
                       >
-                        Live Demo
+                        <span className="text-white text-xl">🚀</span>
                       </a>
                     </div>
+                  </motion.div>
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="text-slate-400 mb-4 line-clamp-2">
+                    {project.description}
+                  </p>
+
+                  {/* Tech Stack */}
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech_stack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs text-indigo-400 font-medium"
+                      >
+                        {tech}
+                      </span>
+                    ))}
                   </div>
-                </motion.div>
-              </ScrollRevealItem>
+                </div>
+
+                {/* Glow Effect */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500/0 to-purple-500/0 group-hover:from-indigo-500/5 group-hover:to-purple-500/5 transition-all duration-300 pointer-events-none"></div>
+              </motion.div>
             ))}
-          </div>
-        </ScrollRevealStagger>
+          </motion.div>
+        </AnimatePresence>
 
         {filteredProjects.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-gray-400 text-lg">
+            <p className="text-slate-400 text-lg">
               No projects found for this filter.
             </p>
           </div>
