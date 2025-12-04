@@ -1,59 +1,60 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Github, Linkedin, Mail, Heart } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const socialLinks = [
-    { name: "GitHub", icon: "🐙", url: "https://github.com" },
-    { name: "LinkedIn", icon: "💼", url: "https://linkedin.com" },
-    { name: "Twitter", icon: "🐦", url: "https://twitter.com" },
-    { name: "Email", icon: "📧", url: "mailto:hello@example.com" },
+  const social = [
+    { icon: <Github size={20} />, url: "https://github.com", label: "GitHub" },
+    { icon: <Linkedin size={20} />, url: "https://linkedin.com", label: "LinkedIn" },
+    { icon: <Mail size={20} />, url: "mailto:hello@example.com", label: "Email" },
   ];
 
-  const quickLinks = [
+  const links = [
     { label: "Home", path: "/" },
     { label: "Projects", path: "/projects" },
     { label: "About", path: "/about" },
     { label: "Contact", path: "/contact" },
   ];
 
+  const services = [
+    "Web Development",
+    "UI/UX Design",
+    "API Development",
+    "3D Animations",
+  ];
+
   return (
-    <footer className="bg-slate-950 border-t border-slate-900 pt-16 pb-8">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main Footer Content */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">P</span>
+    <footer className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-t border-slate-800/50 pt-16 pb-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
+                Y
               </div>
-              <span className="text-xl font-bold text-white">Portfolio</span>
+              <div>
+                <p className="text-white font-bold text-sm">Yasir</p>
+              </div>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Building exceptional digital experiences with modern web
-              technologies and creative solutions.
+              Building elegant solutions with modern tech, clean code, and attention to detail.
             </p>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              <span className="text-xs text-green-400 font-medium">
-                Available for work
-              </span>
-            </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Links */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.path}>
+            <h3 className="text-white font-semibold mb-4 text-sm tracking-wide">Quick Links</h3>
+            <ul className="space-y-3">
+              {links.map((l) => (
+                <li key={l.path}>
                   <Link
-                    to={link.path}
-                    className="text-slate-400 hover:text-white transition-colors text-sm"
+                    to={l.path}
+                    className="text-slate-400 hover:text-cyan-400 text-sm transition-colors duration-300 font-medium"
                   >
-                    {link.label}
+                    {l.label}
                   </Link>
                 </li>
               ))}
@@ -62,50 +63,50 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Services</h3>
-            <ul className="space-y-2 text-sm text-slate-400">
-              <li>Web Development</li>
-              <li>UI/UX Design</li>
-              <li>API Development</li>
-              <li>3D Animations</li>
+            <h3 className="text-white font-semibold mb-4 text-sm tracking-wide">Skills</h3>
+            <ul className="space-y-3">
+              {services.map((s) => (
+                <li key={s} className="text-slate-400 text-sm font-medium hover:text-cyan-400 transition-colors duration-300">{s}</li>
+              ))}
             </ul>
           </div>
 
-          {/* Social Links */}
+          {/* Social */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Connect</h3>
-            <div className="flex flex-wrap gap-3">
-              {socialLinks.map((link) => (
+            <h3 className="text-white font-semibold mb-4 text-sm tracking-wide">Connect</h3>
+            <div className="flex gap-3 mb-6">
+              {social.map((s, i) => (
                 <motion.a
-                  key={link.name}
-                  href={link.url}
+                  key={i}
+                  href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileHover={{ scale: 1.15, y: -3 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-12 h-12 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-2xl hover:border-indigo-500/50 transition-all"
-                  aria-label={link.name}
+                  className="w-11 h-11 rounded-lg bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:border-cyan-500/50 hover:text-cyan-400 hover:from-slate-800 hover:to-slate-700 transition-all duration-300"
+                  aria-label={s.label}
                 >
-                  {link.icon}
+                  {s.icon}
                 </motion.a>
               ))}
             </div>
+            <p className="text-xs text-slate-500 font-medium">Available for collaboration</p>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-900">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-slate-500 text-sm text-center sm:text-left">
-              © {currentYear} Portfolio. Built with React 19 & Flask.
+        {/* Divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent mb-8" />
+
+        {/* Bottom */}
+        <div className="pt-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
+            <p className="text-slate-500 text-xs text-center sm:text-left font-medium">
+              © {currentYear} Yasir. Built with <Heart className="w-4 h-4 inline text-red-500 mx-1 transition-transform group-hover:scale-110" /> using React, Three.js & Tailwind CSS
             </p>
-            <div className="flex gap-6 text-sm text-slate-500">
-              <a href="#" className="hover:text-white transition-colors">
-                Privacy
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Terms
-              </a>
+            <div className="flex gap-8 text-xs font-medium">
+              <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors duration-300">Privacy</a>
+              <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors duration-300">Terms</a>
+              <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors duration-300">License</a>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Environment, MeshDistortMaterial } from "@react-three/drei";
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
 
@@ -35,7 +35,7 @@ function AnimatedSphere({ position, color, speed }) {
 function CodeParticles() {
   const particlesRef = useRef();
   const count = 100;
-  
+
   const positions = new Float32Array(count * 3);
   for (let i = 0; i < count * 3; i++) {
     positions[i] = (Math.random() - 0.5) * 20;
@@ -68,8 +68,18 @@ function CodeParticles() {
 }
 
 export default function Hero3D() {
+  const [isSmall, setIsSmall] = useState(false);
+  useEffect(() => {
+    const onResize = () => setIsSmall(window.innerWidth < 640);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const canvasHeightClass = isSmall ? 'h-72' : 'h-[500px] lg:h-[700px]';
+
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 mt-12 sm:mt-0">
       {/* Animated Grid Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
@@ -114,7 +124,7 @@ export default function Hero3D() {
       />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-screen py-20">
+        <div className="grid lg:grid-cols-2 gap-12 items-center lg:min-h-screen py-12 lg:py-20">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -173,7 +183,8 @@ export default function Hero3D() {
                 transition={{ delay: 0.4 }}
                 className="text-lg sm:text-xl text-slate-400 max-w-xl leading-relaxed"
               >
-                Transforming ideas into elegant solutions using cutting-edge web technologies, modern frameworks, and creative problem-solving.
+                Transforming ideas into elegant solutions using cutting-edge web
+                technologies, modern frameworks, and creative problem-solving.
               </motion.p>
             </div>
 
@@ -230,7 +241,9 @@ export default function Hero3D() {
                   <div className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-slate-500 mt-1">{stat.label}</div>
+                  <div className="text-sm text-slate-500 mt-1">
+                    {stat.label}
+                  </div>
                   {idx < 2 && (
                     <div className="hidden sm:block absolute -right-4 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-800" />
                   )}
@@ -244,34 +257,53 @@ export default function Hero3D() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative h-[500px] lg:h-[700px]"
+            className={`relative ${canvasHeightClass}`}
           >
             <Canvas
-              camera={{ position: [0, 0, 10], fov: 50 }}
+              camera={{ position: isSmall ? [0, 0, 8] : [0, 0, 10], fov: isSmall ? 60 : 50 }}
               dpr={[1, 2]}
               className="rounded-2xl"
             >
               <Suspense fallback={null}>
                 <ambientLight intensity={0.5} />
-                <pointLight position={[10, 10, 10]} intensity={1} color="#06b6d4" />
-                <pointLight position={[-10, -10, -10]} intensity={0.5} color="#3b82f6" />
+                <pointLight
+                  position={[10, 10, 10]}
+                  intensity={1}
+                  color="#06b6d4"
+                />
+                <pointLight
+                  position={[-10, -10, -10]}
+                  intensity={0.5}
+                  color="#3b82f6"
+                />
+                <AnimatedSphere
+                  position={[0, isSmall ? -0.2 : 0, 0]}
+                  color="#06b6d4"
+                  speed={1}
+                />
+                <AnimatedSphere
+                  position={[-2.2, isSmall ? 0.6 : 1, isSmall ? -1 : -2]}
+                  color="#3b82f6"
+                  speed={0.8}
+                />
+                <AnimatedSphere
+                  position={[2.2, isSmall ? -0.6 : -1, isSmall ? -1 : -2]}
+                  color="#8b5cf6"
+                  speed={1.2}
+                />
 
-                <AnimatedSphere position={[0, 0, 0]} color="#06b6d4" speed={1} />
-                <AnimatedSphere position={[-3, 1, -2]} color="#3b82f6" speed={0.8} />
-                <AnimatedSphere position={[3, -1, -2]} color="#8b5cf6" speed={1.2} />
-                
                 <CodeParticles />
-                
+
                 <Environment preset="city" />
               </Suspense>
             </Canvas>
 
-            {/* Floating Tech Tags */}
+            {/* Floating Tech Tags - hide on small screens to avoid overlap */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1 }}
-              className="absolute top-8 left-4 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-cyan-500/30 shadow-lg"
+              className="absolute top-8 left-4 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-cyan-500/30 shadow-lg hidden sm:block"
             >
               <p className="text-sm text-cyan-400 font-mono">React</p>
             </motion.div>
@@ -279,7 +311,7 @@ export default function Hero3D() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1.2 }}
-              className="absolute top-24 right-4 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-blue-500/30 shadow-lg"
+              className="absolute top-24 right-4 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-blue-500/30 shadow-lg hidden sm:block"
             >
               <p className="text-sm text-blue-400 font-mono">Three.js</p>
             </motion.div>
@@ -287,7 +319,7 @@ export default function Hero3D() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.4 }}
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-purple-500/30 shadow-lg"
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-purple-500/30 shadow-lg hidden sm:block"
             >
               <p className="text-sm text-purple-400 font-mono">Next.js</p>
             </motion.div>

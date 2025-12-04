@@ -81,7 +81,7 @@ export default function Navbar() {
                   >
                     {link.label}
                   </motion.span>
-                  
+
                   {location.pathname === link.path && (
                     <>
                       <motion.div
