@@ -1,29 +1,51 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Code2, Sparkles } from "lucide-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const location = useLocation();
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+
+      // Update active section based on scroll position
+      const sections = ["home", "about", "projects", "contact"];
+      const currentSection = sections.find((section) => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return rect.top <= 100 && rect.bottom >= 100;
+        }
+        return false;
+      });
+
+      if (currentSection) {
+        setActiveSection(currentSection);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location]);
-
   const navLinks = [
-    { path: "/", label: "Home" },
-    { path: "/projects", label: "Projects" },
-    { path: "/about", label: "About" },
-    { path: "/contact", label: "Contact" },
+    { id: "home", label: "Home" },
+    { id: "about", label: "About" },
+    { id: "projects", label: "Projects" },
+    { id: "contact", label: "Contact" },
   ];
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+    setIsOpen(false);
+  };
 
   return (
     <motion.nav
@@ -37,13 +59,16 @@ export default function Navbar() {
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 md:h-20">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/">
+          <button
+            onClick={() => scrollToSection("home")}
+            className="flex items-center gap-3 group cursor-pointer"
+          >
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-3 group"
+              className="flex items-center gap-3"
             >
               <div className="relative">
                 <motion.div
@@ -65,54 +90,56 @@ export default function Navbar() {
                 DevPortfolio
               </span>
             </motion.div>
-          </Link>
+          </button>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link key={link.path} to={link.path}>
-                <div className="relative px-4 py-2">
-                  <motion.span
-                    className={`relative z-10 font-medium transition-colors ${
-                      location.pathname === link.path
-                        ? "text-white"
-                        : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    {link.label}
-                  </motion.span>
+              <button
+                key={link.id}
+                onClick={() => scrollToSection(link.id)}
+                className="relative px-4 py-2"
+              >
+                <motion.span
+                  className={`relative z-10 font-medium transition-colors ${
+                    activeSection === link.id
+                      ? "text-white"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  {link.label}
+                </motion.span>
 
-                  {location.pathname === link.path && (
-                    <>
-                      <motion.div
-                        layoutId="navbar-pill"
-                        className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg"
-                        transition={{
-                          type: "spring",
-                          stiffness: 350,
-                          damping: 30,
-                        }}
-                      />
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg blur-md opacity-50"
-                        layoutId="navbar-glow"
-                        transition={{
-                          type: "spring",
-                          stiffness: 350,
-                          damping: 30,
-                        }}
-                      />
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="absolute -top-1 -right-1 z-20"
-                      >
-                        <Sparkles className="w-3 h-3 text-cyan-400" />
-                      </motion.div>
-                    </>
-                  )}
-                </div>
-              </Link>
+                {activeSection === link.id && (
+                  <>
+                    <motion.div
+                      layoutId="navbar-pill"
+                      className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg"
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                    />
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg blur-md opacity-50"
+                      layoutId="navbar-glow"
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                    />
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="absolute -top-1 -right-1 z-20"
+                    >
+                      <Sparkles className="w-3 h-3 text-cyan-400" />
+                    </motion.div>
+                  </>
+                )}
+              </button>
             ))}
           </div>
 
@@ -171,19 +198,23 @@ export default function Navbar() {
               <div className="flex flex-col h-full pt-24 pb-8 px-6">
                 <div className="space-y-2 flex-1">
                   {navLinks.map((link, idx) => (
-                    <Link key={link.path} to={link.path}>
+                    <button
+                      key={link.id}
+                      onClick={() => scrollToSection(link.id)}
+                      className="w-full text-left"
+                    >
                       <motion.div
                         initial={{ x: 50, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: idx * 0.1 }}
                         className={`relative px-4 py-3 rounded-xl font-medium transition-all ${
-                          location.pathname === link.path
+                          activeSection === link.id
                             ? "text-white bg-gradient-to-r from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/25"
                             : "text-slate-400 hover:text-white hover:bg-slate-800"
                         }`}
                       >
                         {link.label}
-                        {location.pathname === link.path && (
+                        {activeSection === link.id && (
                           <motion.div
                             className="absolute -right-1 top-1/2 -translate-y-1/2"
                             initial={{ scale: 0 }}
@@ -193,7 +224,7 @@ export default function Navbar() {
                           </motion.div>
                         )}
                       </motion.div>
-                    </Link>
+                    </button>
                   ))}
                 </div>
 

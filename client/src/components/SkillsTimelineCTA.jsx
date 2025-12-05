@@ -56,7 +56,7 @@ export default function SkillsTimelineCTA() {
   }, []);
 
   return (
-    <div className="py-20 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-2">

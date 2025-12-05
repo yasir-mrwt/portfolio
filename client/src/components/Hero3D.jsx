@@ -72,14 +72,14 @@ export default function Hero3D() {
   useEffect(() => {
     const onResize = () => setIsSmall(window.innerWidth < 640);
     onResize();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const canvasHeightClass = isSmall ? 'h-72' : 'h-[500px] lg:h-[700px]';
+  const canvasHeightClass = isSmall ? "h-72" : "h-[500px] lg:h-[700px]";
 
   return (
-    <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 mt-12 sm:mt-0">
+    <section className="relative min-h-screen flex items-center overflow-hidden pt-12 sm:pt-16 lg:pt-4">
       {/* Animated Grid Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
@@ -124,7 +124,7 @@ export default function Hero3D() {
       />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center lg:min-h-screen py-12 lg:py-20">
+        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-screen py-6 lg:py-8">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -134,27 +134,6 @@ export default function Hero3D() {
           >
             {/* Main Heading */}
             <div className="space-y-4">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 backdrop-blur-sm"
-              >
-                <motion.div
-                  animate={{
-                    scale: [1, 1.2, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                  }}
-                  className="w-2 h-2 bg-cyan-400 rounded-full"
-                />
-                <span className="text-sm text-cyan-400 font-medium">
-                  Full-Stack Developer
-                </span>
-              </motion.div>
-
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -227,8 +206,8 @@ export default function Hero3D() {
               className="flex flex-wrap gap-8 pt-8"
             >
               {[
-                { value: "50+", label: "Projects" },
-                { value: "3+", label: "Years" },
+                { value: "20+", label: "Projects" },
+                { value: "2+", label: "Years" },
                 { value: "100%", label: "Quality" },
               ].map((stat, idx) => (
                 <motion.div
@@ -260,7 +239,10 @@ export default function Hero3D() {
             className={`relative ${canvasHeightClass}`}
           >
             <Canvas
-              camera={{ position: isSmall ? [0, 0, 8] : [0, 0, 10], fov: isSmall ? 60 : 50 }}
+              camera={{
+                position: isSmall ? [0, 0, 8] : [0, 0, 10],
+                fov: isSmall ? 60 : 50,
+              }}
               dpr={[1, 2]}
               className="rounded-2xl"
             >
@@ -311,17 +293,41 @@ export default function Hero3D() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1.2 }}
-              className="absolute top-24 right-4 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-blue-500/30 shadow-lg hidden sm:block"
+              className="absolute top-24 right-4 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-green-500/30 shadow-lg hidden sm:block"
             >
-              <p className="text-sm text-blue-400 font-mono">Three.js</p>
+              <p className="text-sm text-green-400 font-mono">Node.js</p>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.4 }}
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-purple-500/30 shadow-lg hidden sm:block"
+              transition={{ delay: 1.3 }}
+              className="absolute bottom-32 left-4 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-yellow-500/30 shadow-lg hidden sm:block"
             >
-              <p className="text-sm text-purple-400 font-mono">Next.js</p>
+              <p className="text-sm text-yellow-400 font-mono">JavaScript</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.4 }}
+              className="absolute bottom-24 right-8 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-orange-500/30 shadow-lg hidden sm:block"
+            >
+              <p className="text-sm text-orange-400 font-mono">Express.js</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.5 }}
+              className="absolute bottom-40 right-4 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-blue-500/30 shadow-lg hidden sm:block"
+            >
+              <p className="text-sm text-blue-400 font-mono">Tailwind CSS</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.6 }}
+              className="absolute top-1/2 right-2 px-4 py-2 bg-slate-900/80 backdrop-blur-md rounded-lg border border-red-500/30 shadow-lg hidden sm:block"
+            >
+              <p className="text-sm text-red-400 font-mono">HTML/CSS</p>
             </motion.div>
           </motion.div>
         </div>
