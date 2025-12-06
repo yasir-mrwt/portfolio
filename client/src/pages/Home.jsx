@@ -10,10 +10,19 @@ import {
   ExternalLink,
   CheckCircle,
   Send,
+  AlertCircle,
+  Code2,
+  Briefcase,
+  GraduationCap,
+  Award,
+  Terminal,
+  Zap,
 } from "lucide-react";
 import Hero3D from "../components/Hero3D";
 import SkillsTimelineCTA from "../components/SkillsTimelineCTA";
 import ProjectsShowcase from "../components/ProjectsShowcase";
+import { sendContact } from "../utils/api";
+import cvFile from "../assets/images/cv.pdf";
 
 // Contact Form Component
 const ContactForm = () => {
@@ -25,6 +34,7 @@ const ContactForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,28 +42,37 @@ const ContactForm = () => {
       ...prev,
       [name]: value,
     }));
+    if (error) setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const result = await sendContact(formData);
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
-    }, 3000);
+      if (result.status === "success") {
+        setIsSubmitted(true);
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormData({
+            name: "",
+            email: "",
+            subject: "",
+            message: "",
+          });
+        }, 5000);
+      } else {
+        setError(result.message || "Failed to send message. Please try again.");
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+      console.error("Form submission error:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -108,6 +127,19 @@ const ContactForm = () => {
                 out the form below and I'll get back to you within 24 hours.
               </p>
             </div>
+
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3"
+              >
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm text-red-400">{error}</p>
+                </div>
+              </motion.div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
@@ -206,8 +238,8 @@ const ContactForm = () => {
                 <motion.button
                   type="submit"
                   disabled={isSubmitting}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+                  whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
                   className="w-full px-10 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold text-white text-base shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all duration-300 inline-flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
@@ -239,14 +271,23 @@ const ContactForm = () => {
   );
 };
 
-// About Section with ID
-const AboutSection = () => {
+// Professional Summary Section
+const ProfessionalSummary = () => {
+  const downloadCV = () => {
+    const link = document.createElement("a");
+    link.href = cvFile;
+    link.download = "Muhammad_Yasir_CV.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div
       id="about"
       className="relative py-20 lg:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
     >
-      {/* Animated Grid Background */}
+      {/* Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
         <motion.div
@@ -289,115 +330,355 @@ const AboutSection = () => {
         className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"
       />
 
-      <div className="container mx-auto max-w-5xl relative z-10">
-        {/* Main Content */}
+      <div className="container mx-auto max-w-6xl relative z-10">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="space-y-16 text-center"
+          className="text-center mb-16"
         >
-          {/* Heading */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1, duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 backdrop-blur-sm mb-6"
           >
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mx-auto">
-              <span className="bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
-                Passionate About
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                Building Excellence
-              </span>
-            </h2>
+            <Sparkles className="w-4 h-4 text-cyan-400" />
+            <span className="text-sm text-cyan-400 font-medium">About Me</span>
           </motion.div>
 
-          {/* Divider */}
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="h-1 w-20 mx-auto bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full"
-          />
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
+            <span className="bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+              Full-Stack Developer
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+              Building Scalable Solutions
+            </span>
+          </h2>
 
-          {/* Description */}
+          <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            Passionate about creating robust, user-centric applications using
+            modern technologies. Specializing in full-stack development with a
+            focus on clean code and scalable architecture.
+          </p>
+        </motion.div>
+
+        {/* Quick Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
+        >
+          {[
+            { icon: Code2, label: "Projects Completed", value: "15+" },
+            { icon: Briefcase, label: "Years Experience", value: "2+" },
+            { icon: Terminal, label: "Technologies", value: "20+" },
+            { icon: Award, label: "Certifications", value: "5+" },
+          ].map((stat, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -5 }}
+              className="bg-gradient-to-br from-slate-900/50 to-slate-950/50 backdrop-blur-sm border border-slate-800/50 rounded-xl p-6 text-center"
+            >
+              <stat.icon className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
+              <div className="text-2xl sm:text-3xl font-bold text-white mb-1">
+                {stat.value}
+              </div>
+              <div className="text-sm text-slate-400">{stat.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Main Content Grid */}
+        <div className="grid lg:grid-cols-2 gap-8 mb-16">
+          {/* Professional Background */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="space-y-8 max-w-4xl mx-auto"
+            className="space-y-6"
           >
-            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white leading-relaxed">
-              Full-stack developer with expertise in building robust, scalable
-              applications using modern technologies.
-            </p>
+            <div className="bg-gradient-to-br from-slate-900/50 to-slate-950/50 backdrop-blur-sm border border-slate-800/50 rounded-2xl p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <Briefcase className="w-6 h-6 text-cyan-400" />
+                <h3 className="text-2xl font-bold text-white">Experience</h3>
+              </div>
 
-            <div className="grid sm:grid-cols-3 gap-6 pt-4">
-              <motion.div
-                whileHover={{ y: -5 }}
-                className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-all"
-              >
-                <h3 className="text-lg font-bold text-white mb-2">Frontend</h3>
-                <p className="text-sm text-slate-300">
-                  React, Vite, Tailwind CSS, Framer Motion
-                </p>
-              </motion.div>
-              <motion.div
-                whileHover={{ y: -5 }}
-                className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-all"
-              >
-                <h3 className="text-lg font-bold text-white mb-2">Backend</h3>
-                <p className="text-sm text-slate-300">
-                  Node.js, Python, FastAPI, REST APIs
-                </p>
-              </motion.div>
-              <motion.div
-                whileHover={{ y: -5 }}
-                className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-all"
-              >
-                <h3 className="text-lg font-bold text-white mb-2">Database</h3>
-                <p className="text-sm text-slate-300">
-                  MongoDB, PostgreSQL, Supabase
-                </p>
-              </motion.div>
+              <div className="space-y-6">
+                <div className="relative pl-6 border-l-2 border-cyan-500/30">
+                  <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-cyan-500"></div>
+                  <h4 className="text-lg font-semibold text-white mb-1">
+                    Independent Projects & Self-Learning
+                  </h4>
+                  <p className="text-cyan-400 text-sm mb-2">
+                    Dec 2024 - Present
+                  </p>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    Building full-stack applications to master modern web
+                    technologies. Creating production-ready projects with React,
+                    Node.js, and Python. Focused on implementing best practices
+                    in code architecture and deployment.
+                  </p>
+                </div>
+
+                <div className="relative pl-6 border-l-2 border-slate-700">
+                  <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-slate-600"></div>
+                  <h4 className="text-lg font-semibold text-white mb-1">
+                    Student Developer
+                  </h4>
+                  <p className="text-cyan-400 text-sm mb-2">
+                    nov 2024 - Present
+                  </p>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    Developed multiple academic projects including management
+                    systems, e-commerce platforms, and real-time applications
+                    using MERN stack and FastAPI. Gained practical experience in
+                    software development lifecycle.
+                  </p>
+                </div>
+              </div>
             </div>
-
-            <p className="text-base sm:text-lg text-slate-400 leading-relaxed pt-4">
-              Driven by continuous learning and delivering meaningful, scalable
-              solutions. Open to{" "}
-              <span className="text-cyan-400 font-semibold">
-                full-time roles, internships, and project-based work
-              </span>{" "}
-              where I can contribute effectively and grow professionally.
-            </p>
           </motion.div>
 
-          {/* Buttons */}
+          {/* Education & Skills */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 pt-12 justify-center"
+            className="space-y-6"
           >
+            <div className="bg-gradient-to-br from-slate-900/50 to-slate-950/50 backdrop-blur-sm border border-slate-800/50 rounded-2xl p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <GraduationCap className="w-6 h-6 text-cyan-400" />
+                <h3 className="text-2xl font-bold text-white">Education</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-lg font-semibold text-white mb-1">
+                    Bachelor's in Computer Science
+                  </h4>
+                  <p className="text-cyan-400 text-sm mb-2">2023 - 2027</p>
+                  <p className="text-slate-300 text-sm">
+                    Focused on Software Engineering, Data Structures,
+                    Algorithms, Database Systems, and Full-Stack Development.
+                    Active participant in coding competitions and tech
+                    workshops.
+                  </p>
+                </div>
+
+                <div className="pt-6 border-t border-slate-800">
+                  <h4 className="text-lg font-semibold text-white mb-4">
+                    Core Competencies
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      "React.js",
+                      "Node.js",
+                      "Python",
+                      "FastAPI",
+                      "MongoDB",
+                      "PostgreSQL",
+                      "REST APIs",
+                      "Git",
+                      "JavaScript",
+                      "HTML/CSS",
+                    ].map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-full text-cyan-400 text-xs font-medium"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Tech Stack Highlights */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-16"
+        >
+          <h3 className="text-2xl font-bold text-white text-center mb-8">
+            Technical Expertise
+          </h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                title: "Frontend Development",
+                icon: Code2,
+                skills: [
+                  "React.js",
+                  "Vite",
+                  "Tailwind CSS",
+                  "Framer Motion",
+                  "JavaScript",
+                ],
+                color: "cyan",
+              },
+              {
+                title: "Backend Development",
+                icon: Terminal,
+                skills: [
+                  "Node.js",
+                  "Python",
+                  "FastAPI",
+                  "Express.js",
+                  "REST APIs",
+                ],
+                color: "blue",
+              },
+              {
+                title: "Database & Tools",
+                icon: Zap,
+                skills: ["MongoDB", "PostgreSQL", "Supabase", "Git", "Postman"],
+                color: "purple",
+              },
+            ].map((category, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ y: -5 }}
+                className="bg-gradient-to-br from-slate-900/50 to-slate-950/50 backdrop-blur-sm border border-slate-800/50 rounded-xl p-6"
+              >
+                <category.icon
+                  className={`w-8 h-8 text-${category.color}-400 mb-4`}
+                />
+                <h4 className="text-lg font-bold text-white mb-3">
+                  {category.title}
+                </h4>
+                <ul className="space-y-2">
+                  {category.skills.map((skill, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-center gap-2 text-sm text-slate-300"
+                    >
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full bg-${category.color}-400`}
+                      ></div>
+                      {skill}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* What I Offer */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-2xl p-8 md:p-10 mb-16"
+        >
+          <h3 className="text-2xl font-bold text-white text-center mb-6">
+            What I Bring to Your Team
+          </h3>
+          <div className="grid md:grid-cols-2 gap-6 text-slate-300">
+            <div className="flex gap-3">
+              <CheckCircle className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="font-semibold text-white mb-1">
+                  Clean, Maintainable Code
+                </h4>
+                <p className="text-sm">
+                  Following best practices and industry standards for scalable
+                  applications
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <CheckCircle className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="font-semibold text-white mb-1">
+                  Full-Stack Proficiency
+                </h4>
+                <p className="text-sm">
+                  End-to-end development from database design to frontend
+                  implementation
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <CheckCircle className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="font-semibold text-white mb-1">
+                  Problem-Solving Mindset
+                </h4>
+                <p className="text-sm">
+                  Analytical approach to debugging and optimizing complex
+                  systems
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <CheckCircle className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="font-semibold text-white mb-1">Fast Learner</h4>
+                <p className="text-sm">
+                  Quick to adapt to new technologies and frameworks as needed
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <p className="text-lg text-slate-300 mb-8">
+            Open to{" "}
+            <span className="text-cyan-400 font-semibold">
+              full-time roles, internships, and freelance projects
+            </span>
+            <br />
+            Ready to contribute and grow with your team
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <motion.button
+              onClick={downloadCV}
               whileHover={{
                 scale: 1.05,
-                boxShadow: "0 20px 40px rgba(6, 182, 212, 0.2)",
+                boxShadow: "0 20px 40px rgba(6, 182, 212, 0.3)",
               }}
               whileTap={{ scale: 0.95 }}
-              className="group flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold text-white text-base shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:shadow-cyan-500/40"
+              className="group flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold text-white text-base shadow-lg shadow-cyan-500/20 transition-all duration-300"
             >
               <Download className="w-5 h-5" />
               <span>Download CV</span>
             </motion.button>
-          </motion.div>
+
+            <motion.a
+              href="#contact"
+              whileHover={{
+                scale: 1.05,
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="group flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 border border-slate-700 rounded-xl font-bold text-white text-base hover:border-cyan-500/50 transition-all duration-300"
+            >
+              <Mail className="w-5 h-5" />
+              <span>Get in Touch</span>
+            </motion.a>
+          </div>
         </motion.div>
       </div>
     </div>
@@ -405,13 +686,6 @@ const AboutSection = () => {
 };
 
 export default function Home() {
-  const scrollToContact = () => {
-    const element = document.getElementById("contact");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       {/* Hero Section */}
@@ -419,8 +693,8 @@ export default function Home() {
         <Hero3D />
       </div>
 
-      {/* About Section */}
-      <AboutSection />
+      {/* Professional Summary (About) Section */}
+      <ProfessionalSummary />
 
       {/* Skills Timeline Section */}
       <SkillsTimelineCTA />
@@ -430,7 +704,7 @@ export default function Home() {
         <ProjectsShowcase />
       </div>
 
-      {/* Connect With Me Section (Social Links & Form) */}
+      {/* Connect With Me Section */}
       <section className="py-20 lg:py-32 relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
@@ -498,7 +772,7 @@ export default function Home() {
                   </motion.a>
 
                   <motion.a
-                    href="https://linkedin.com/in/muhammad-yasir"
+                    href="https://www.linkedin.com/in/muhammad-yasir-50b240315/"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1, y: -2 }}

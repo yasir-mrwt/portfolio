@@ -14,7 +14,7 @@ export default function Footer() {
     },
     {
       icon: <Linkedin size={20} />,
-      url: "https://linkedin.com/in/muhammad-yasir",
+      url: "https://www.linkedin.com/in/muhammad-yasir-50b240315/",
       label: "LinkedIn",
       username: "Muhammad Yasir",
       color: "hover:text-blue-400 hover:border-blue-400/30",

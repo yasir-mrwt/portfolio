@@ -45,7 +45,13 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <Router>
+    <Router
+      // Add these future flags to opt-in to v7 changes
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
         <Navbar />
         <main className="relative">
